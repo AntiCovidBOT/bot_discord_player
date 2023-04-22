@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "start": "npx nodemon"
+    "start": "npx nodemon src/index.ts",
+    "build": "tsc"
   },
   "main": "index.js",
   "license": "MIT",
@@ -19,10 +20,13 @@
     "play-dl": "^1.9.6",
     "soundcloud-scraper": "^5.0.3",
     "spotify-url-info": "^3.2.3",
+    "ts-node": "^10.9.1",
     "youtube-sr": "^4.3.4",
     "ytdl-core": "^4.11.4"
   },
   "devDependencies": {
-    "eslint": "^8.24.0"
+    "@types/node": "^18.15.13",
+    "eslint": "^8.24.0",
+    "typescript": "^5.0.4"
   }
 }
