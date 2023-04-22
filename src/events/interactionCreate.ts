@@ -1,12 +1,10 @@
 import {EventDiscord} from "./event";
-import {Interaction} from "discord.js";
-import {Command} from "../commands/command";
 
 export const InteractionCreate: EventDiscord = {
 	name: 'interactionCreate',
 	once: false,
-	execute(commands: Command[]) {
-		// if (!interaction.isCommand()) return;
+	execute(interaction: any) {
+		if (!interaction.isCommand()) return;
 
 		const command = interaction.client.commands.get(interaction.commandName);
 		if (!command) return;

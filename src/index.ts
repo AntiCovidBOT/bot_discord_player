@@ -3,8 +3,7 @@ import {EventBot, EventDiscord} from "./events/event";
 import {Ping} from "./commands/ping";
 import {Ready} from "./events/ready";
 import {InteractionCreate} from "./events/interactionCreate";
-import {ClientEvents} from "discord.js";
-
+import {Play} from "./commands/play";
 const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
 const { TOKEN, CLIENT_ID, GUILD_ID } = require('../config.json');
 
@@ -43,12 +42,12 @@ class BotTest {
 	setClientEvents() {
 		for (const event of this.events) {
 			if (event.once) {
-				this.client.once(event.name, (...args: any[]) => event.execute(this.client, ...args));
+				this.client.once(event.name, (...args: any[]) => event.execute(...args));
 
 				continue;
 			}
 
-			this.client.on(event.name, (...args: any[]) => event.execute(this.client, ...args));
+			this.client.on(event.name, (...args: any[]) => event.execute(...args));
 		}
 	}
 
@@ -57,29 +56,26 @@ class BotTest {
 	}
 }
 
-let commands: Command[] = [Ping];
+let commands: Command[] = [Ping, Play];
 let events: EventDiscord[] = [Ready, InteractionCreate];
+let intents = [
+	GatewayIntentBits.DirectMessages,
+	GatewayIntentBits.Guilds,
+	GatewayIntentBits.GuildBans,
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.MessageContent,
+	GatewayIntentBits.GuildVoiceStates,
+];
 
 const commandBot = new CommandBot()
-commandBot.setCommandBuild(commands)
-
 const eventBot = new EventBot()
+
+commandBot.setCommandBuild(commands)
 eventBot.setEventBuild(events)
 
-const bot = new BotTest(new Client({
-	intents: [
-		GatewayIntentBits.DirectMessages,
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildBans,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildVoiceStates,
-	],
-}))
-
+const bot = new BotTest(new Client({ intents }))
 bot.setCommands(commandBot.getCommands)
 bot.setClientCommands()
 bot.setEvents(events)
 bot.setClientEvents()
-
 bot.loginBot()

@@ -1,7 +1,7 @@
 export interface EventDiscord {
     name: string;
     once: boolean;
-    execute: (client: any, ...args: any[]) => void;
+    execute: (...args: any[]) => void;
 }
 
 export class EventBot {
