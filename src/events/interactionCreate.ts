@@ -1,16 +1,17 @@
-import {EventDiscord} from "./event";
+import {ChatInputCommandInteraction, Collection, Interaction, SlashCommandBuilder} from "discord.js";
+import {Command} from "../ interfaces/command";
 
-export const InteractionCreate: EventDiscord = {
+export default {
 	name: 'interactionCreate',
 	once: false,
-	execute(interaction: any) {
-		if (!interaction.isCommand()) return;
+	async execute(commands: Collection<string, Command>, interaction: any) {
+		if (!interaction.isChatInputCommand()) return;
 
-		const command = interaction.client.commands.get(interaction.commandName);
+		const command = commands.get(interaction.commandName);
 		if (!command) return;
 
 		try {
-			command.execute(interaction);
+			await command.execute(interaction as ChatInputCommandInteraction);
 		}
 		catch (error) {
 			console.error(error);

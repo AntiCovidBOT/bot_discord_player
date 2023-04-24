@@ -1,19 +1,14 @@
 import {createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior} from "@discordjs/voice";
-import {Command} from "./command";
+import {EmbedObject, Embed} from "../embeds";
+import {SlashCommandBuilder} from "discord.js";
 const play = require('play-dl');
-const { ApplicationCommandOptionType } = require('discord.js');
 
-export const Play: Command = {
-    name: "play",
-    description: "play any music on your voice channel!",
-    options: [
-        {
-            name: "query",
-            type: ApplicationCommandOptionType.String,
-            description: "The song you want to play",
-            required: true,
-        },
-    ],
+export default {
+    data: new SlashCommandBuilder()
+        .setName('play')
+        .setDescription('play any music on your voice channel!')
+        .addStringOption((option) => option.setName('query').setDescription('The song you want to play').setRequired(true)),
+
     async execute(interaction: any) {
         const channel = interaction.member.voice?.channel
         if (!channel) return interaction.channel.send('Connect to a Voice Channel');
@@ -44,6 +39,21 @@ export const Play: Command = {
                 noSubscriber: NoSubscriberBehavior.Play,
             },
         });
+
+        const embed: EmbedObject = {
+            title: 'Playing Music',
+            description: `[${yt_info[0].title}](${yt_info[0].url})`,
+            color: 0x2f3136,
+            thumbnail: yt_info[0].thumbnails[0].url,
+            footer: {
+                text: `Requested by ${interaction.user.tag}`,
+                iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+            },
+        }
+
+        const embedBuilder = new Embed(embed).build()
+
+        await interaction.followUp({ embeds: [embedBuilder] });
 
         player.play(resource);
         connection.subscribe(player);
