@@ -1,5 +1,6 @@
 import {createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior} from "@discordjs/voice";
-import {EmbedObject, Embed} from "../embeds";
+import {Embed} from "../embeds";
+import {EmbedType} from '../types/embed';
 import {SlashCommandBuilder} from "discord.js";
 const play = require('play-dl');
 
@@ -40,7 +41,7 @@ export default {
             },
         });
 
-        const embed: EmbedObject = {
+        const embed: EmbedType = {
             title: 'Playing Music',
             description: `[${yt_info[0].title}](${yt_info[0].url})`,
             color: 0x2f3136,

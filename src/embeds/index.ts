@@ -1,4 +1,5 @@
 import {EmbedBuilder} from "discord.js";
+import { EmbedType } from "../types/embed";
 
 export class Embed {
     title: string;
@@ -7,7 +8,7 @@ export class Embed {
     thumbnail: string;
     footer: any;
 
-    constructor(embed: EmbedObject) {
+    constructor(embed: EmbedType) {
         this.title = embed.title;
         this.description = embed.description;
         this.color = embed.color;
@@ -23,12 +24,4 @@ export class Embed {
             .setThumbnail(this.thumbnail)
             .setFooter(this.footer);
     }
-}
-
-export interface EmbedObject {
-    title: string;
-    description: string;
-    color: number;
-    thumbnail: string;
-    footer: any;
 }
