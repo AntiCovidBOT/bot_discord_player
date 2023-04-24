@@ -1,8 +1,15 @@
-import { ApplicationCommandDataResolvable, Client, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
+import {
+    ApplicationCommandDataResolvable,
+    Client,
+    Collection,
+    GatewayIntentBits,
+    REST,
+    Routes,
+} from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
-import {Command} from "./ interfaces/command";
-const { TOKEN, CLIENT_ID, GUILD_ID } = require('../config.json');
+import {Command} from "../ interfaces/command";
+const { TOKEN, CLIENT_ID, GUILD_ID } = require('../../config.json');
 
 export class Bot {
     slashCommands = new Array<ApplicationCommandDataResolvable>();
@@ -17,10 +24,10 @@ export class Bot {
     }
 
     private async setClientCommands() {
-        const commandFiles = readdirSync(join(__dirname, "/commands")).filter((file) => !file.endsWith(".map"));
+        const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => !file.endsWith(".map"));
 
         for (const file of commandFiles) {
-            const command = await import(join(__dirname, "/commands", `${file}`));
+            const command = await import(join(__dirname, "../commands", `${file}`));
 
             this.slashCommands.push(command.default.data);
             this.slashCommandsMap.set(command.default.data.name, command.default);
@@ -31,10 +38,10 @@ export class Bot {
     }
 
     private async setClientEvents() {
-        const eventFiles = readdirSync(join(__dirname, "/events")).filter((file) => !file.endsWith(".map"));
+        const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => !file.endsWith(".map"));
 
         for (const file of eventFiles) {
-            const event = await import(join(__dirname, "/events", `${file}`));
+            const event = await import(join(__dirname, "../events", `${file}`));
 
             if (event.default.once) {
                 this.client.once(event.default.name, (...args: any[]) => event.default.execute(...args));

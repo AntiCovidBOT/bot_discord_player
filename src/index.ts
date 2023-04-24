@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { Bot } from './bot';
+import { Bot } from './domain/bot';
 
-export default new Bot(new Client({
+new Bot(new Client({
 	intents: [
 		GatewayIntentBits.DirectMessages,
 		GatewayIntentBits.Guilds,
