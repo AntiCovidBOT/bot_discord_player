@@ -1,15 +1,13 @@
-import {
-    ApplicationCommandDataResolvable,
-    Client,
-    Collection,
-    GatewayIntentBits,
-    REST,
-    Routes,
-} from "discord.js";
+import {ApplicationCommandDataResolvable, Client, Collection, GatewayIntentBits, REST, Routes} from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import {Command} from "../ interfaces/command";
-const { TOKEN, CLIENT_ID, GUILD_ID } = require('../../config.json');
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+
+const TOKEN = process.env.TOKEN || '';
+const CLIENT_ID = process.env.CLIENT_ID || '';
 
 export class Bot {
     slashCommands = new Array<ApplicationCommandDataResolvable>();
@@ -28,7 +26,6 @@ export class Bot {
 
         for (const file of commandFiles) {
             const command = await import(join(__dirname, "../commands", `${file}`));
-
             this.slashCommands.push(command.default.data);
             this.slashCommandsMap.set(command.default.data.name, command.default);
         }
