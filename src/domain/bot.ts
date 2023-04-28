@@ -1,8 +1,17 @@
-import {ApplicationCommandDataResolvable, Client, Collection, GatewayIntentBits, REST, Routes} from "discord.js";
+import {
+    ApplicationCommandDataResolvable,
+    Client,
+    Collection,
+    GatewayIntentBits,
+    REST,
+    Routes,
+    Snowflake
+} from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import {Command} from "../ interfaces/command";
 import * as dotenv from 'dotenv'
+import Music from "./music";
 
 dotenv.config()
 
@@ -12,6 +21,7 @@ const CLIENT_ID = process.env.CLIENT_ID || '';
 export class Bot {
     slashCommands = new Array<ApplicationCommandDataResolvable>();
     slashCommandsMap = new Collection<string, Command>();
+    queues = new Collection<Snowflake, Music>();
 
     constructor(readonly client: Client) {
         this.client = client;

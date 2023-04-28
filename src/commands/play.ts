@@ -1,8 +1,15 @@
-import {createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior} from "@discordjs/voice";
+import {
+    createAudioPlayer,
+    DiscordGatewayAdapterCreator,
+    joinVoiceChannel,
+    NoSubscriberBehavior
+} from "@discordjs/voice";
 import {Embed} from "../embeds";
 import {EmbedType} from '../types/embed';
-import {SlashCommandBuilder} from "discord.js";
-const play = require('play-dl');
+import {SlashCommandBuilder, TextChannel} from "discord.js";
+import {Song} from "../domain/song";
+import { bot } from '../index';
+import Music from "../domain/music";
 
 export default {
     data: new SlashCommandBuilder()
@@ -16,36 +23,33 @@ export default {
 
         await interaction.deferReply();
 
-        const connection = joinVoiceChannel({
-            channelId: interaction.member.voice.channel.id,
-            guildId: interaction.guild.id,
-            adapterCreator: interaction.guild.voiceAdapterCreator
-        });
-
         const args = interaction.options.getString('query');
-        let yt_info = await play.search(args, { limit: 1 });
-        let stream = await play.stream(yt_info[0].url);
+        const song = await Song.fromYoutube(args)
 
-        if (args.toString().includes('https://')) {
-            yt_info = await play.video_info(args);
-            stream = await play.stream_from_info(yt_info);
+        const queue = bot.queues.get(interaction.guild!.id);
+        if (queue) {
+            queue.enqueue(song);
+
+            return interaction.followUp(`**${song.title}** added to queue!`)
         }
 
-        const resource = createAudioResource(stream.stream, {
-            inputType: stream.type,
+        const newQueue = new Music({
+            interaction,
+            textChannel: interaction.channel! as TextChannel,
+            connection: joinVoiceChannel({
+                channelId: channel.id,
+                guildId: interaction.guild.id,
+                adapterCreator: interaction.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
+            })
         });
 
-        const player = createAudioPlayer({
-            behaviors: {
-                noSubscriber: NoSubscriberBehavior.Play,
-            },
-        });
+        bot.queues.set(interaction.guild!.id, newQueue);
+        newQueue.enqueue(song);
 
         const embed: EmbedType = {
             title: 'Playing Music',
-            description: `[${yt_info[0].title}](${yt_info[0].url})`,
+            description: `**[${song.title}](${song.duration})**`,
             color: 0x2f3136,
-            thumbnail: yt_info[0].thumbnails[0].url,
             footer: {
                 text: `Requested by ${interaction.user.tag}`,
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
@@ -53,11 +57,7 @@ export default {
         }
 
         const embedBuilder = new Embed(embed).build()
-
         await interaction.followUp({ embeds: [embedBuilder] });
-
-        player.play(resource);
-        connection.subscribe(player);
     }
 }
 

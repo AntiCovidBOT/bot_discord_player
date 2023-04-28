@@ -5,14 +5,12 @@ export class Embed {
     title: string;
     description: string;
     color: number;
-    thumbnail: string;
     footer: any;
 
     constructor(embed: EmbedType) {
         this.title = embed.title;
         this.description = embed.description;
         this.color = embed.color;
-        this.thumbnail = embed.thumbnail;
         this.footer = embed.footer;
     }
 
@@ -21,7 +19,6 @@ export class Embed {
             .setTitle(this.title)
             .setDescription(this.description)
             .setColor(this.color)
-            .setThumbnail(this.thumbnail)
             .setFooter(this.footer);
     }
 }
